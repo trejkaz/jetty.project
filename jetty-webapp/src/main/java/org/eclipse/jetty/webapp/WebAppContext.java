@@ -24,6 +24,7 @@ import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSessionActivationListener;
 import javax.servlet.http.HttpSessionAttributeListener;
@@ -126,6 +127,7 @@ public class WebAppContext extends ServletContextHandler implements WebAppClassL
     private Configuration[] _configurations;
     private String _defaultsDescriptor=WEB_DEFAULTS_XML;
     private String _descriptor=null;
+    private UnpackStrategy _unpackStrategy = UnpackStrategy.CLASSIC;
     private final List<String> _overrideDescriptors = new ArrayList<String>();
     private boolean _distributable=false;
     private boolean _extractWAR=true;
@@ -268,7 +270,7 @@ public class WebAppContext extends ServletContextHandler implements WebAppClassL
     {
         _resourceAliases = map;
     }
-
+    
     /* ------------------------------------------------------------ */
     public String getResourceAlias(String alias)
     {
@@ -283,6 +285,31 @@ public class WebAppContext extends ServletContextHandler implements WebAppClassL
         if (_resourceAliases == null)
             return null;
         return _resourceAliases.remove(alias);
+    }
+    
+    /* ------------------------------------------------------------ */
+    public UnpackStrategy getUnpackStrategy()
+    {
+        return _unpackStrategy;
+    }
+
+    /* ------------------------------------------------------------ */
+    public void setUnpackStrategy(UnpackStrategy unpackStrategy)
+    {
+        this._unpackStrategy = unpackStrategy;
+    }
+    
+    /* ------------------------------------------------------------ */
+    public File resolveUnpackDirectory()
+    {
+        File dir = getTempDirectory();
+        if (dir == null)
+        {
+            UnpackDir upackDir = new UnpackDir(_unpackStrategy);
+            dir = upackDir.getDir(this);
+            setTempDirectory(dir);
+        }
+        return dir;
     }
 
     /* ------------------------------------------------------------ */
@@ -575,6 +602,7 @@ public class WebAppContext extends ServletContextHandler implements WebAppClassL
      * @return Returns the Override Descriptor.
      * @deprecated use {@link #getOverrideDescriptors()}
      */
+    @Deprecated
     public String getOverrideDescriptor()
     {
         if (_overrideDescriptors.size()!=1)
@@ -873,6 +901,7 @@ public class WebAppContext extends ServletContextHandler implements WebAppClassL
      * @param overrideDescriptor The overrideDescritpor to set.
      * @deprecated use {@link #setOverrideDescriptors(List)}
      */
+    @Deprecated
     public void setOverrideDescriptor(String overrideDescriptor)
     {
         _overrideDescriptors.clear();
@@ -1217,6 +1246,7 @@ public class WebAppContext extends ServletContextHandler implements WebAppClassL
     public class Context extends ServletContextHandler.Context
     {
         /* ------------------------------------------------------------ */
+        @Override
         public URL getResource(String path) throws MalformedURLException
         {
             Resource resource=WebAppContext.this.getResource(path);
