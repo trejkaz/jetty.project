@@ -117,7 +117,15 @@ public class UnpackDir
     {
         if (jettyHome == null)
         {
-            jettyHome = new File(System.getProperty("jetty.home"));
+            String jettyHomeProp = System.getProperty("jetty.home");
+            if (jettyHomeProp == null)
+            {
+                return new File(System.getProperty("user.dir")); // return CWD
+            }
+            else
+            {
+                jettyHome = new File(jettyHomeProp);
+            }
         }
         return jettyHome;
     }

@@ -12,8 +12,9 @@
 // ========================================================================
 package org.eclipse.jetty.webapp;
 
+import static org.hamcrest.Matchers.*;
+
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletContext;
@@ -21,15 +22,10 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import junit.framework.Assert;
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class WebAppContextTest
 {
@@ -39,13 +35,13 @@ public class WebAppContextTest
         Server server = new Server();
         //test if no classnames set, its the defaults
         WebAppContext wac = new WebAppContext();
-        assertNull(wac.getConfigurations());
+        Assert.assertThat("Wac.getConfiguration", wac.getConfigurations(), nullValue());
         String[] classNames = wac.getConfigurationClasses();
-        assertNotNull(classNames);
+        Assert.assertThat(classNames, notNullValue());
 
         //test if no classname set, and none from server its the defaults
         wac.setServer(server);
-        assertTrue(Arrays.equals(classNames, wac.getConfigurationClasses()));
+        Assert.assertThat(classNames,arrayContaining(wac.getConfigurationClasses()));
     }
 
     @Test
@@ -62,29 +58,31 @@ public class WebAppContextTest
         wac.setConfigurationClasses(myClassNames);
         wac.setServer(server);
         String[] names = wac.getConfigurationClasses();
-        assertTrue(Arrays.equals(myClassNames, names));
+        Assert.assertThat(myClassNames,arrayContaining(names));
 
 
         //test if no explicit classnames, they come from the server
         WebAppContext wac2 = new WebAppContext();
         wac2.setServer(server);
-        assertTrue(Arrays.equals(classNames, wac2.getConfigurationClasses()));
+        Assert.assertThat(classNames, arrayContaining(wac2.getConfigurationClasses()));
     }
 
     @Test
-    public void testConfigurationInstances ()
+    public void testConfigurationInstances()
     {
-        Configuration[] configs = {new WebInfConfiguration()};
+        Configuration[] configs =
+        { new WebInfConfiguration() };
         WebAppContext wac = new WebAppContext();
         wac.setConfigurations(configs);
-        assertTrue(Arrays.equals(configs, wac.getConfigurations()));
+
+        Assert.assertThat(configs,arrayContaining(wac.getConfigurations()));
 
         //test that explicit config instances override any from server
-        String[] classNames = {"x.y.z"};
+        String[] classNames = { "x.y.z" };
         Server server = new Server();
-        server.setAttribute(WebAppContext.SERVER_CONFIG, classNames);
+        server.setAttribute(WebAppContext.SERVER_CONFIG,classNames);
         wac.setServer(server);
-        assertTrue(Arrays.equals(configs,wac.getConfigurations()));
+        Assert.assertThat(configs,arrayContaining(wac.getConfigurations()));
     }
     
     @Test
@@ -100,9 +98,9 @@ public class WebAppContextTest
 
         // Then
         // This passes:
-        assertNotNull(ctx.getRealPath("/doesnotexist"));
+        Assert.assertThat("Context.getRealPath('/doesnotexist')", ctx.getRealPath("/doesnotexist"), notNullValue());
         // This fails:
-        assertNotNull(ctx.getRealPath("/doesnotexist/"));
+        Assert.assertThat("Context.getRealPath('/doesnotexist/')", ctx.getRealPath("/doesnotexist/"), notNullValue());
     }
     
     /**
@@ -137,6 +135,7 @@ public class WebAppContextTest
         Assert.assertNotNull(contextB.getServletHandler().getServletContext().getContext("/B/s"));
     }
     
+    @SuppressWarnings("serial")
     class ServletA extends GenericServlet
     {
         @Override
@@ -146,6 +145,7 @@ public class WebAppContextTest
         }      
     }
     
+    @SuppressWarnings("serial")
     class ServletB extends GenericServlet
     {
         @Override
