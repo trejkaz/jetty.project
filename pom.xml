@@ -347,6 +347,7 @@
     <module>jetty-overlay-deployer</module>
     <module>jetty-nosql</module>
     <module>jetty-http-spi</module>
+    <module>jetty-jsp-deps</module>
     <module>jetty-distribution</module>
     <module>test-continuation</module>
     <!--module>test-continuation-jetty6</module-->
