@@ -319,6 +319,7 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-jsp-deps</artifactId>
       <version>${project.version}</version>
+      <type>pom</type>
     </dependency>
     <!-- Standard Jetty Deps -->
     <dependency>
