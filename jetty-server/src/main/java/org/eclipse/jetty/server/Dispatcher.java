@@ -263,7 +263,7 @@ public class Dispatcher implements RequestDispatcher
                 }     
                 
                 baseRequest.setRequestURI(_uri);
-                baseRequest.setContextPath(_contextHandler.getContextPath());
+                baseRequest.setContextPath("/".equals(_contextHandler.getContextPath()) ? "" : _contextHandler.getContextPath());
                 baseRequest.setServletPath(null);
                 baseRequest.setPathInfo(_uri);
                 baseRequest.setAttributes(attr);
